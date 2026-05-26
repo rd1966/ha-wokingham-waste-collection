@@ -16,13 +16,30 @@ jobs:
         with:
           ref: ${{ github.event.release.target_commitish }}
 
-      - name: Bump Manifest Version
-        uses: mdegat01/bump-homeassistant-manifest-version@v1.1.0
-        with:
-          # Points directly to your custom components integration directory
-          path: "custom_components/wokingham_waste_collection"
-          # Automatically extracts the version number from your release tag (e.g. v0.0.4 -> 0.0.4)
-          version: ${{ github.event.release.tag_name }}
+      - name: Update manifest.json with Python
+        run: |
+          python3 -c "
+          import json
+          import os
+
+          # Clean up the tag name (e.g., 'v0.0.4' becomes '0.0.4')
+          raw_tag = '${{ github.event.release.tag_name }}'
+          version_number = raw_tag.lstrip('v')
+
+          manifest_path = 'custom_components/wokingham_waste_collection/manifest.json'
+
+          if os.path.exists(manifest_path):
+              with open(manifest_path, 'r') as f:
+                  data = json.load(f)
+              
+              data['version'] = version_number
+              
+              with open(manifest_path, 'w') as f:
+                  json.dump(data, f, indent=2)
+              print(f'Successfully updated manifest to {version_number}')
+          else:
+              print('Error: manifest.json file not found!')
+          "
 
       - name: Commit and Push Changes
         uses: stefanzweifel/git-auto-commit-action@v5
