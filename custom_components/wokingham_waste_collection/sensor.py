@@ -12,7 +12,6 @@ SCAN_INTERVAL = timedelta(hours=6)
 
 async def async_setup_entry(hass, entry, async_add_entities):
     """Set up the bin sensors dynamically from config entry data."""
-    # Pull parameters supplied by the user via the UI Config Flow box
     postcode = entry.data.get("postcode")
     address_id = entry.data.get("address_id")
     
@@ -31,7 +30,6 @@ class WokinghamBinSensor(SensorEntity):
         self._state = None
         self._attributes = {}
         self._name = f"Wokingham {bin_type.replace('_', ' ').title()}"
-        # Unique ID prevents entity conflicts if someone tracks multiple properties
         self._unique_id = f"wokingham_{address_id}_{bin_type}"
 
     @property
@@ -52,10 +50,17 @@ class WokinghamBinSensor(SensorEntity):
 
     @property
     def icon(self):
+        """WOW ITEM #2: Dynamic, contextual icons matching the bin type."""
+        if self._bin_type == "recycling":
+            return "mdi:recycle"
+        elif self._bin_type == "food_waste":
+            return "mdi:food-apple"
+        elif self._bin_type == "garden_waste":
+            return "mdi:leaf"
         return "mdi:trash-can"
 
     def update(self):
-        """Fetch live data from the council website using instance parameters."""
+        """Fetch live data from the council website."""
         url = "https://www.wokingham.gov.uk/rubbish-and-recycling/waste-collection/find-your-bin-collection-day"
         headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)"}
         
@@ -95,9 +100,21 @@ class WokinghamBinSensor(SensorEntity):
                             if matched_bin == self._bin_type:
                                 collection_date = datetime.strptime(date_str, "%d/%m/%Y").date()
                                 days_until = (collection_date - today).days
+                                days_until = max(0, days_until)
                                 
-                                self._state = max(0, days_until)
-                                self._attributes = {"collection_date": date_str}
+                                # WOW ITEM #1: Human-readable states + raw days in attributes for easy automation
+                                if days_until == 0:
+                                    self._state = "Today"
+                                elif days_until == 1:
+                                    self._state = "Tomorrow"
+                                else:
+                                    self._state = f"{days_until} days"
+                                    
+                                self._attributes = {
+                                    "collection_date": date_str,
+                                    "days_until": days_until,
+                                    "is_collection_imminent": days_until <= 1
+                                }
                                 return
         except Exception as e:
             _LOGGER.error("Error updating Wokingham Bin data: %s", e)
