@@ -5,7 +5,7 @@ import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import callback
 
-DOMAIN = "wokingham_bins"
+DOMAIN = "DOMAIN = "wokingham_waste_collection"
 
 _LOGGER = logging.getLogger(__name__)
 

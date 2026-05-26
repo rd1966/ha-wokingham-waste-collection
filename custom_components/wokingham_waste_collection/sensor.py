@@ -6,7 +6,7 @@ from bs4 import BeautifulSoup
 
 from homeassistant.components.sensor import SensorEntity
 
-DOMAIN = "wokingham_bins"
+DOMAIN = "wokingham_waste_collection"
 _LOGGER = logging.getLogger(__name__)
 SCAN_INTERVAL = timedelta(hours=6)
 
