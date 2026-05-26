@@ -17,10 +17,11 @@ jobs:
           ref: ${{ github.event.release.target_commitish }}
 
       - name: Bump Manifest Version
-        # FIXED: Changed from mofb to moofb (two 'o's)
-        uses: moofb/bump-homeassistant-manifest-version@v1.1.0
+        uses: mdegat01/bump-homeassistant-manifest-version@v1.1.0
         with:
-          # Automatically strips the 'v' from tag 'v0.0.4' to write '0.0.4' inside manifest.json
+          # Points directly to your custom components integration directory
+          path: "custom_components/wokingham_waste_collection"
+          # Automatically extracts the version number from your release tag (e.g. v0.0.4 -> 0.0.4)
           version: ${{ github.event.release.tag_name }}
 
       - name: Commit and Push Changes
