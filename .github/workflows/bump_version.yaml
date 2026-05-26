@@ -17,9 +17,10 @@ jobs:
           ref: ${{ github.event.release.target_commitish }}
 
       - name: Bump Manifest Version
-        uses: mofb/bump-homeassistant-manifest-version@v1.1.0
+        # FIXED: Changed from mofb to moofb (two 'o's)
+        uses: moofb/bump-homeassistant-manifest-version@v1.1.0
         with:
-          # Automatically strips the 'v' from tag 'v0.0.3' to write '0.0.3' inside manifest.json
+          # Automatically strips the 'v' from tag 'v0.0.4' to write '0.0.4' inside manifest.json
           version: ${{ github.event.release.tag_name }}
 
       - name: Commit and Push Changes
