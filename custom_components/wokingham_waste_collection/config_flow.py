@@ -9,7 +9,7 @@ DOMAIN = "DOMAIN = "wokingham_waste_collection"
 
 _LOGGER = logging.getLogger(__name__)
 
-class WokinghamBinsConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
+class WokinghamWasteCollectionConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle a config flow for Wokingham Bins."""
 
     VERSION = 1
