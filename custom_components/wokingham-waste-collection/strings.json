@@ -1,0 +1,16 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Wokingham Bin Tracker Setup",
+        "data": {
+          "postcode": "Postcode (e.g. RG41 5HA)",
+          "address_id": "Council Address UPRN ID (e.g. 116558)"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Fields cannot be left blank."
+    }
+  }
+}
