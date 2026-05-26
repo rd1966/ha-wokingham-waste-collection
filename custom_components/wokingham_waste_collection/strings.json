@@ -2,15 +2,22 @@
   "config": {
     "step": {
       "user": {
-        "title": "Wokingham Bin Tracker Setup",
+        "title": "Wokingham Waste Collection",
         "data": {
-          "postcode": "Postcode (e.g. RG41 5HA)",
-          "address_id": "Council Address UPRN ID (e.g. 116558)"
+          "postcode": "Postcode"
+        }
+      },
+      "address": {
+        "title": "Select Address",
+        "description": "Please select your address from the council directory list:",
+        "data": {
+          "address_text": "Address"
         }
       }
     },
     "error": {
-      "invalid_auth": "Fields cannot be left blank."
+      "cannot_connect": "Failed to connect to Wokingham Council website.",
+      "no_addresses_found": "No valid addresses found for this postcode."
     }
   }
 }
