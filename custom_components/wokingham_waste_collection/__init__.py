@@ -1,7 +1,7 @@
 """The Wokingham Bins integration."""
 import logging
 
-DOMAIN = "wokingham_bins"
+DOMAIN = "wokingham_waste_collection"
 PLATFORMS = ["sensor"]
 
 _LOGGER = logging.getLogger(__name__)

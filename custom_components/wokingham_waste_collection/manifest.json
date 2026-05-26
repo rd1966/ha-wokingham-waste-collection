@@ -1,0 +1,11 @@
+{
+  "domain": "wokingham_waste_collection",
+  "name": "Wokingham Bin Collection Tracker",
+  "codeowners": ["@rd1966"],
+  "config_flow": true,
+  "documentation": "https://github.com/rd1966/ha-wokingham-waste-collection",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/rd1966/ha-wokingham-waste-collection/issues",
+  "requirements": ["beautifulsoup4==4.12.3", "requests==2.31.0"],
+  "version": "1.0.0"
+}
