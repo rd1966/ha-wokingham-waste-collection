@@ -94,16 +94,16 @@ class WokinghamWasteCollectionConfigFlow(config_entries.ConfigFlow, domain=DOMAI
 
         # Step B: Submit Postcode to populate address options list
         payload1 = {
-            "postcode_search_csv": postcode, 
-            "op": "Search postcode", 
-            "form_build_id": token1, 
-            "form_id": "waste_recycling_information"
+            "postcode_search": postcode,
+            "op": "Find Address",
+            "form_build_id": token1,
+            "form_id": "waste_collection_api_form"
         }
         res2 = session.post(url, data=payload1, headers=headers, timeout=10)
         soup2 = BeautifulSoup(res2.text, 'html.parser')
 
         # Step C: Parse select box dropdown choices
-        select_box = soup2.find("select", {"name": "address_options_csv"})
+        select_box = soup2.find("select", {"name": "address_options"})
         if select_box:
             options = select_box.find_all("option")
             for option in options:

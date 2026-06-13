@@ -70,11 +70,11 @@ class WokinghamBinSensor(SensorEntity):
             res1 = session.get(url, headers=headers, timeout=10)
             token1 = BeautifulSoup(res1.text, 'html.parser').find("input", {"name": "form_build_id"})['value']
 
-            payload1 = {"postcode_search_csv": self._postcode, "op": "Search postcode", "form_build_id": token1, "form_id": "waste_recycling_information"}
+            payload1 = {"postcode_search": self._postcode, "op": "Find Address", "form_build_id": token1, "form_id": "waste_collection_api_form"}
             res2 = session.post(url, data=payload1, headers=headers, timeout=10)
             token2 = BeautifulSoup(res2.text, 'html.parser').find("input", {"name": "form_build_id"})['value']
 
-            payload2 = {"postcode_search_csv": self._postcode, "address_options_csv": self._address_id, "op": "Show collection dates", "form_build_id": token2, "form_id": "waste_recycling_information"}
+            payload2 = {"postcode_search": self._postcode, "address_options": self._address_id, "op": "Show collection dates", "form_build_id": token2, "form_id": "waste_collection_api_form"}
             res3 = session.post(url, data=payload2, headers=headers, timeout=10)
 
             if res3.status_code == 200:
