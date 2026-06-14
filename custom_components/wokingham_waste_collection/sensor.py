@@ -83,12 +83,14 @@ class WokinghamBinSensor(SensorEntity):
                 if container:
                     text_lines = [line.strip() for line in container.get_text().split('\n') if line.strip()]
                     today = datetime.now().date()
-                    
+
+                    # Collect every dated bin the page lists, keyed by bin type.
+                    found = {}
                     for i, line in enumerate(text_lines):
                         date_match = re.search(r'(\d{2}/\d{2}/\d{4})', line)
                         if date_match:
                             date_str = date_match.group(1)
-                            
+
                             matched_bin = "unknown"
                             for check_index in range(i-1, -1, -1):
                                 pos_name = text_lines[check_index].lower()
@@ -96,25 +98,38 @@ class WokinghamBinSensor(SensorEntity):
                                     if "regular" not in pos_name and "next" not in pos_name:
                                         matched_bin = pos_name.replace(" (week 1)", "").replace(" (week 2)", "").strip().replace(" ", "_")
                                         break
-                            
-                            if matched_bin == self._bin_type:
-                                collection_date = datetime.strptime(date_str, "%d/%m/%Y").date()
-                                days_until = (collection_date - today).days
-                                days_until = max(0, days_until)
-                                
-                                # WOW ITEM #1: Human-readable states + raw days in attributes for easy automation
-                                if days_until == 0:
-                                    self._state = "Today"
-                                elif days_until == 1:
-                                    self._state = "Tomorrow"
-                                else:
-                                    self._state = f"{days_until} days"
-                                    
-                                self._attributes = {
-                                    "collection_date": date_str,
-                                    "days_until": days_until,
-                                    "is_collection_imminent": days_until <= 1
-                                }
-                                return
+
+                            if matched_bin != "unknown" and matched_bin not in found:
+                                found[matched_bin] = datetime.strptime(date_str, "%d/%m/%Y").date()
+
+                    collection_date = found.get(self._bin_type)
+
+                    # Food waste has no printed date: the council collects it weekly
+                    # on the day of the regular collection. Derive the next occurrence
+                    # of that weekday from any dated regular bin.
+                    if collection_date is None and self._bin_type == "food_waste":
+                        regular = found.get("household_waste") or found.get("recycling")
+                        if regular is None and found:
+                            regular = next(iter(found.values()))
+                        if regular is not None:
+                            offset = (regular.weekday() - today.weekday()) % 7
+                            collection_date = today + timedelta(days=offset)
+
+                    if collection_date is not None:
+                        days_until = max(0, (collection_date - today).days)
+
+                        # WOW ITEM #1: Human-readable states + raw days in attributes for easy automation
+                        if days_until == 0:
+                            self._state = "Today"
+                        elif days_until == 1:
+                            self._state = "Tomorrow"
+                        else:
+                            self._state = f"{days_until} days"
+
+                        self._attributes = {
+                            "collection_date": collection_date.strftime("%d/%m/%Y"),
+                            "days_until": days_until,
+                            "is_collection_imminent": days_until <= 1
+                        }
         except Exception as e:
             _LOGGER.error("Error updating Wokingham Bin data: %s", e)
